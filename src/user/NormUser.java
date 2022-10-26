@@ -1,6 +1,7 @@
 package user;
 
 import java.io.Serializable;
+import java.util.InputMismatchException;
 
 import main.App;
 
@@ -34,20 +35,39 @@ public class NormUser extends NormalUser implements Serializable {
 
     @Override
     public void withdraw() {
-        System.out.println("Enter Withdraw Amount");
-        int withdraw = scan.nextInt();
-        if (withdraw > 0 && withdraw < this.total) {
-            this.total -= withdraw;
-            this.checkBalance();
-            App.userFileWrite(App.getUsersset());
-        } else if (this.total == 0) {
-            System.out.println("You Have Insufficient Balance");
-        } else if (withdraw > this.total) {    
-            System.out.println("Please Withdraw a Less Amount");
-        } else {
-            System.out.println("You Can't Withdraw less than 0");
+        while (true) {
+            System.out.println("Enter Withdraw Amount");
+            int withdraw = 1;
+            try {
+                withdraw = scan.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid Input");
+                scan.reset();
+                scan.next();
+                continue;
+            }
+            scan.reset();
+            if (withdraw > 0 && withdraw < this.total) {
+                this.total -= withdraw;
+                this.checkBalance();
+                App.userFileWrite(App.getUsersset());
+                break;
+            } else if (this.total == 0) {
+                System.out.println("You Have Insufficient Balance");
+                scan.reset();
+                this.userMenu();
+                break;
+            } else if (withdraw > this.total) {    
+                System.out.println("Please Withdraw a Less Amount");
+                scan.reset();
+            } else if (withdraw == 0) {
+                System.out.println("You Cannot Withdraw O");
+                scan.reset();
+            } else if (withdraw < 0) {
+                System.out.println("You Cannot Withdraw an Amount less than 0");
+                scan.reset();
+            }
         }
-        
     }
 
     @Override 

@@ -1,5 +1,6 @@
 package user;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import main.App;
@@ -44,21 +45,39 @@ public class NormalUser implements User{
     }
 
     public void withdraw() {
-        System.out.println("Enter Withdraw Amount");
-        int withdraw = scan.nextInt();
-        if (withdraw > 0 && withdraw < this.balance) {
-            this.balance -= withdraw;
-            this.checkBalance();
-        } else if (this.balance == 0) {
-            System.out.println("You Have Insufficient Balance");
-            this.userMenu();
-        } else if (withdraw > this.balance) {    
-            System.out.println("Please Withdraw a Less Amount");
-            this.userMenu();
-        } else {
-            System.out.println("You Can't Withdraw less than 0");
-            this.userMenu();
-        } 
+        while (true) {
+            System.out.println("Enter Withdraw Amount");
+            int withdraw = 1;
+            try {
+                withdraw = scan.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid Input");
+                scan.reset();
+                scan.next();
+                continue;
+            }
+            scan.reset();
+            if (withdraw > 0 && withdraw < this.balance) {
+                this.balance -= withdraw;
+                this.checkBalance();
+                App.userFileWrite(App.getUsersset());
+                break;
+            } else if (this.balance == 0) {
+                System.out.println("You Have Insufficient Balance");
+                scan.reset();
+                this.userMenu();
+                break;
+            } else if (withdraw > this.balance) {    
+                System.out.println("Please Withdraw a Less Amount");
+                scan.reset();
+            } else if (withdraw == 0) {
+                System.out.println("You Cannot Withdraw O");
+                scan.reset();
+            } else if (withdraw < 0) {
+                System.out.println("You Cannot Withdraw an Amount less than 0");
+                scan.reset();
+            }
+        }
     }
 
     public void userMenu() {//1
@@ -93,7 +112,7 @@ public class NormalUser implements User{
 
     public int login() {
         int ans = 0;
-        System.out.println("Enter Your Password: ");
+        System.out.println("Enter Your Current Password: ");
         String pass = scan.next();
         if (this.password.equals(pass)) {
                 System.out.println("Login Successful");
